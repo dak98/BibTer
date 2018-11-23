@@ -1,5 +1,10 @@
 package bibtex.syntax;
 
+/**
+ * Enumerators for all the possible fields available for categories.
+ *
+ * @author dak98
+ */
 public enum Fields {
     author,
     title,
@@ -22,5 +27,5 @@ public enum Fields {
     chapter,
     type,
     school,
-    insitution
+    institution
 }

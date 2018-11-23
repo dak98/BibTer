@@ -4,34 +4,38 @@ import bibtex.data.record.RecordStorage;
 import data.operations.IDataParser;
 import data.operations.IDataStorage;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Main parser for the BibTex files.
- * Parses through the text using parsers from:
- * record (@link bibtex.data.record.Parser), name (@link bibtex.data.name.Parser),
- * string.constant (@link bibtex.data.string.constant.Parser) packages.
+ * Parses through the text using {@link bibtex.data.record.RecordParser},
+ * {@link bibtex.data.name.Parser} and {@link bibtex.data.string.constant.Parser}.
  *
- * Implements IDataParser (@link data.operations.IDataParser).
+ * Implements {@link data.operations.IDataParser}.
  *
  * @author dak98
  */
-public class DataParser implements IDataParser<RecordStorage> {
+public class DataParser implements IDataParser<RecordStorage, DataStorage> {
     /**
      * Parses specified BibTex data in order to pick out all the records.
      *
-     * @param data
+     * @param dataToParse
      *          Data to be parsed.
      * @return List of individual records from a BibTex file.
      */
     @Override
-    public List<RecordStorage> parse(StringBuilder data) {
+    public List<RecordStorage> parse(StringBuilder dataToParse) {
+        List records = new LinkedList<RecordStorage>();
+
+
+
         return null;
     }
 
     /**
-     * Stores data obtained from the parse (@link bibtex.data.DataParser.parse) method
-     * in storage class (@link bibtex.data.DataStorage).
+     * Stores data obtained from the {@link bibtex.data.DataParser#parse(StringBuilder)}
+     * in {@link bibtex.data.DataStorage}.
      *
      * @param dataToStore
      *          List of records to be stored.

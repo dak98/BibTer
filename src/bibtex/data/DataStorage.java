@@ -6,9 +6,9 @@ import data.operations.IDataStorage;
 import java.util.List;
 
 /**
- * Container class for storing list of records (@link bibtex.data.record.RecordStorage).
+ * Container class for storing list of (@link bibtex.data.record.RecordStorage).
  *
- * Implements IDataStorage (@link data.operations.IDataStorage).
+ * Implements (@link data.operations.IDataStorage).
  *
  * @author dak98
  */
