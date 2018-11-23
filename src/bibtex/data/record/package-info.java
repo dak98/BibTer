@@ -4,4 +4,4 @@
  * Contains classes which manage parsing, storage and printing of
  * records inside a BibTex file.
  */
-package bibtex_data.record;
+package bibtex.data.record;

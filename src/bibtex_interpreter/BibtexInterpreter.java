@@ -1,21 +1,21 @@
 package bibtex_interpreter;
 
-import bibtex_data_loader.Loader;
+import bibtex.data.Loader;
 
 import java.lang.StringBuilder;
-import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class BibtexInterpreter {
     public static void main(String[] args) {
         Loader loader = new Loader();
         StringBuilder s = null;
+        Path path = Paths.get("/home/jakub/Documents/xampl.bib");
         try {
-            s = loader.load("/home/jakub/Documents/xampl.bib");
-        } catch (IOException e) {
-
-        } catch (NullPointerException e) {
-
+            s = loader.load(path);
+        } catch (Exception e) {
+            System.out.println("xd");
         }
-        System.out.println(s.toString());
+        System.out.println(s);
     }
 }
