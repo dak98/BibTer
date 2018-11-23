@@ -1,4 +1,4 @@
-package bibtex_interpreter;
+package bibtex.interpreter;
 
 import bibtex.data.Loader;
 

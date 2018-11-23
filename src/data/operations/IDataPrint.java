@@ -1,4 +1,4 @@
-package data_operations;
+package data.operations;
 
 public interface IDataPrint {
 }

@@ -1,4 +1,4 @@
-package bibtex_syntax;
+package bibtex.syntax;
 
 public enum Fields {
     author,
