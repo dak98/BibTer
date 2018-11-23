@@ -18,13 +18,32 @@ import java.util.Map;
  */
 public class RecordStorage implements IDataStorage<RecordStorage> {
     private Categories category;
-    private Map fieldsMap = new LinkedHashMap<Fields,String>();
+    private String key;
+    public Map fieldsMap = new LinkedHashMap<Fields,String>();
 
+    public RecordStorage(Categories category, String key) {
+        this.category = category;
+        this.key = key;
+    }
+
+    @Override
     public RecordStorage get(){
-        return null;
+        return this;
+    }
+
+    public void addField(Fields field, String value){
+        fieldsMap.put(field, value);
     }
 
     public void setCategory(Categories category) {
         this.category = category;
+    }
+
+    public Categories getCategory() {
+        return this.category;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 }
