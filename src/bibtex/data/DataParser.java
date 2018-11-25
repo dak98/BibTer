@@ -1,10 +1,8 @@
 package bibtex.data;
 
+import bibtex.data.record.RecordParser;
 import bibtex.data.record.RecordStorage;
 import data.operations.IDataParser;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Main parser for the BibTex files.
@@ -25,10 +23,20 @@ public class DataParser implements IDataParser<DataStorage> {
      */
     @Override
     public DataStorage parse(String dataToParse) {
-        List records = new LinkedList<RecordStorage>();
+        DataStorage dataStorage = new DataStorage();
 
+        IDataParser<RecordStorage> recordParser = new RecordParser();
+        RecordStorage record = null;
+        for (int nextStart = dataToParse.indexOf('@'); nextStart != -1; nextStart = dataToParse.indexOf('@')) {
+            dataToParse = dataToParse.substring(nextStart + 1);
 
+            record = recordParser.parse(dataToParse);
 
-        return null;
+            if (record != null) {
+                dataStorage.addRecord(record);
+            }
+        }
+
+        return dataStorage;
     }
 }

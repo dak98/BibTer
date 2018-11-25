@@ -21,6 +21,14 @@ public class RecordStorage implements IDataStorage<RecordStorage> {
     private String key;
     public Map fieldsMap = new LinkedHashMap<Fields,String>();
 
+    /**
+     * Default constructor for {@link bibtex.data.record.RecordStorage}.
+     *
+     * @param category
+     *          Category of the record.
+     * @param key
+     *         Key of the record.
+     */
     public RecordStorage(Categories category, String key) {
         this.category = category;
         this.key = key;
@@ -31,18 +39,40 @@ public class RecordStorage implements IDataStorage<RecordStorage> {
         return this;
     }
 
+    /**
+     * Adds field to particular {@link bibtex.data.record.RecordStorage}.
+     *
+     * @param field
+     *          Field's name as enum constant.
+     * @param value
+     *          Field's value.
+     *
+     */
     public void addField(Fields field, String value){
         fieldsMap.put(field, value);
     }
 
+    /**
+     *
+     * @param category
+     *          Category of the record.
+     */
     public void setCategory(Categories category) {
         this.category = category;
     }
 
+    /**
+     *
+     * @return Category of the record.
+     */
     public Categories getCategory() {
         return this.category;
     }
 
+    /**
+     *
+     * @return Key of the record.
+     */
     public String getKey() {
         return this.key;
     }
