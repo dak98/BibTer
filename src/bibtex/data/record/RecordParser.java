@@ -64,7 +64,8 @@ public class RecordParser implements IDataParser<RecordStorage> {
         FieldsOfCategory fieldsOfCategory = new FieldsOfCategory();
         List listOfObligatoryFields = new LinkedList<Fields>();
         String token = stringTokenizer.nextToken();
-        while (!((token = moveToFirstChar(stringTokenizer.nextToken())).indexOf('}') == 0)) {
+        while (stringTokenizer.hasMoreTokens()) {
+            token = moveToFirstChar(stringTokenizer.nextToken());
             Fields field = getNextField(token);
 
             token = token.substring(token.indexOf('=') + 3);

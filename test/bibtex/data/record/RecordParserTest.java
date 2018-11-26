@@ -30,7 +30,7 @@ class RecordParserTest {
         String dataToParse3 = "iNbOoK{key, aUtHor = \"field1}";
         assertThrows(IndexOutOfBoundsException.class, ()->{recordParser.parse(dataToParse3);});
 
-        String dataToParse4 = "article{key1, title = \"title1\", author = \"author1\",}";
+        String dataToParse4 = "article{key1, title = \"title1\", author = \"author1\"}";
         assertThrows(UnsupportedOperationException.class, () -> {recordParser.parse(dataToParse4);});
     }
 }
