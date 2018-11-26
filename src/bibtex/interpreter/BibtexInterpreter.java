@@ -3,7 +3,6 @@ package bibtex.interpreter;
 import bibtex.data.DataParser;
 import bibtex.data.DataStorage;
 import bibtex.data.Loader;
-import bibtex.data.record.RecordParser;
 import bibtex.data.record.RecordStorage;
 import bibtex.syntax.Fields;
 import data.operations.IDataParser;

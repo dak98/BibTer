@@ -18,11 +18,5 @@ public enum Categories {
     phdthesis,
     techreport,
     misc,
-    unpublished;
-
-    private final int numberOfFields = Fields.values().length;
-
-    private boolean[] obligatory = new boolean[numberOfFields];
-    private boolean[] optional = new boolean[numberOfFields];
-    private boolean[] ignored = new boolean[numberOfFields];
+    unpublished
 }

@@ -2,12 +2,14 @@ package bibtex.data;
 
 import bibtex.data.record.RecordParser;
 import bibtex.data.record.RecordStorage;
+import bibtex.data.string.constant.StringParser;
+import bibtex.data.string.constant.StringStorage;
 import data.operations.IDataParser;
 
 /**
  * Main parser for the BibTex files.
- * Parses through the text using {@link bibtex.data.record.RecordParser},
- * {@link bibtex.data.name.Parser} and {@link bibtex.data.string.constant.Parser}.
+ * Parses through the text using {@link bibtex.data.record.RecordParser}
+ * and {@link bibtex.data.string.constant.StringParser}.
  *
  * Implements {@link data.operations.IDataParser}.
  *
@@ -25,15 +27,18 @@ public class DataParser implements IDataParser<DataStorage> {
     public DataStorage parse(String dataToParse) {
         DataStorage dataStorage = new DataStorage();
 
-        IDataParser<RecordStorage> recordParser = new RecordParser();
-        RecordStorage record = null;
         for (int nextStart = dataToParse.indexOf('@'); nextStart != -1; nextStart = dataToParse.indexOf('@')) {
             dataToParse = dataToParse.substring(nextStart + 1);
 
-            record = recordParser.parse(dataToParse);
+            IDataParser parser = new RecordParser();
+            RecordStorage record = (RecordStorage)parser.parse(dataToParse);
+            parser = new StringParser();
+            StringStorage stringConstant = (StringStorage)parser.parse(dataToParse);
 
             if (record != null) {
                 dataStorage.addRecord(record);
+            } else if (stringConstant != null) {
+                dataStorage.addStringConstant(stringConstant);
             }
         }
 
