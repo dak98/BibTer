@@ -1,18 +1,17 @@
 package bibtex.interpreter;
 
 import bibtex.data.DataParser;
+import bibtex.data.DataPrint;
 import bibtex.data.DataStorage;
 import bibtex.data.Loader;
-import bibtex.data.record.RecordStorage;
-import bibtex.syntax.Fields;
 import data.operations.IDataParser;
+import data.operations.IDataPrint;
+import data.operations.IDataStorage;
 
 import java.lang.StringBuilder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 
 public class BibtexInterpreter {
     public static void main(String[] args) {
@@ -27,20 +26,11 @@ public class BibtexInterpreter {
 
         IDataParser<DataStorage> parser = new DataParser();
 
-        DataStorage dataStorage = parser.parse(s.toString());
+        IDataStorage<DataStorage> dataStorage = parser.parse(s.toString());
 
-        List<RecordStorage> records = dataStorage.getRecords();
+        IDataPrint<DataStorage> printer = new DataPrint();
 
-        for (RecordStorage record : records) {
-            System.out.println(record.getCategory());
-            System.out.println(record.getKey());
-
-            for (Map.Entry<Fields,String> entries : (Set<Map.Entry<Fields,String>>) record.getFields().entrySet()) {
-                System.out.print(entries.getKey() + " ");
-                System.out.println(entries.getValue());
-            }
-        }
-
+        printer.print((DataStorage) dataStorage, '#');
 
     }
 }

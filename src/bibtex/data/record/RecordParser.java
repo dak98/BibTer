@@ -70,7 +70,8 @@ public class RecordParser implements IDataParser<RecordStorage> {
             token = moveToFirstChar(stringTokenizer.nextToken());
             Fields field = getNextField(token);
 
-            token = token.substring(token.indexOf('=') + 3);
+            token = moveToFirstChar(token.substring(token.indexOf('=') + 1));
+            token = token.substring(1);
 
             String value = getNextFieldValue(token);
 
