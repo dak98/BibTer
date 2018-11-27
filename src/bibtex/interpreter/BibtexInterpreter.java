@@ -35,10 +35,9 @@ public class BibtexInterpreter {
             System.out.println(record.getCategory());
             System.out.println(record.getKey());
 
-            Set<Map.Entry<Fields,String>> entries = record.fieldsMap.entrySet();
-            for (Map.Entry<Fields,String> entry : entries) {
-                System.out.print(entry.getKey() + " ");
-                System.out.println(entry.getValue());
+            for (Map.Entry<Fields,String> entries : (Set<Map.Entry<Fields,String>>) record.getFields().entrySet()) {
+                System.out.print(entries.getKey() + " ");
+                System.out.println(entries.getValue());
             }
         }
 

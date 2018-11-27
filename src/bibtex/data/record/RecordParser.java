@@ -6,6 +6,7 @@ import bibtex.syntax.FieldsOfCategory;
 import bibtex.syntax.ToEnumConverter;
 import data.operations.IDataParser;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -27,13 +28,13 @@ public class RecordParser implements IDataParser<RecordStorage> {
      *          String with a individual record.
      *          Should start with category name and end with '}' sign.
      * @return Instance of RecordStorage representing an individual record or
-     *         null if category name is not in {@link bibtex.syntax.Categories}.
+     *         null if category name is not in {@link Categories}.
      * @throws NullPointerException
      *          dataToParse is null.
      * @throws IndexOutOfBoundsException
      *          No record's key was found.
      * @throws IllegalArgumentException
-     *          Field's name or record itself was not correct.
+     *          Field's name was not correct.
      * @throws UnsupportedOperationException
      *          There weren't enough obligatory fields for category.
      */
@@ -44,9 +45,10 @@ public class RecordParser implements IDataParser<RecordStorage> {
 
         int end = dataToParse.indexOf('}');
         if (end == -1) {
-            throw new IllegalArgumentException();
+            return null;
         }
 
+        dataToParse = dataToParse.substring(0, dataToParse.indexOf('}'));
 
         Categories category = getCategory(dataToParse);
 
@@ -62,7 +64,7 @@ public class RecordParser implements IDataParser<RecordStorage> {
         RecordStorage recordStorage = new RecordStorage(category, key);
 
         FieldsOfCategory fieldsOfCategory = new FieldsOfCategory();
-        List listOfObligatoryFields = new LinkedList<Fields>();
+        List currentListOfObligatoryFields = new LinkedList<Fields>();
         String token = stringTokenizer.nextToken();
         while (stringTokenizer.hasMoreTokens()) {
             token = moveToFirstChar(stringTokenizer.nextToken());
@@ -75,18 +77,24 @@ public class RecordParser implements IDataParser<RecordStorage> {
             if (fieldsOfCategory.isFieldOfCategory(category, field)) {
                 recordStorage.addField(field, value);
                 if (fieldsOfCategory.isObligatory(category, field)) {
-                    listOfObligatoryFields.add(field);
+                    currentListOfObligatoryFields.add(field);
                 }
             }
         }
 
-        if (listOfObligatoryFields.containsAll(fieldsOfCategory.getObligatoryFields(category))) {
+        List listOfObligatoryFields = new LinkedList<Fields>(fieldsOfCategory.getObligatoryFields(category));
+        listOfObligatoryFields.removeAll(currentListOfObligatoryFields);
+
+        if (listOfObligatoryFields.isEmpty()) {
             return recordStorage;
         } else {
-            throw new UnsupportedOperationException("There weren't enough obligatory fields for category");
+            Iterator<Fields> listIterator = listOfObligatoryFields.listIterator();
+            StringBuilder message = new StringBuilder();
+            while (listIterator.hasNext()) {
+                message.append(listIterator.next()).append(" ");
+            }
+            throw new UnsupportedOperationException("Missing " + message + "from " + category + ".");
         }
-
-
     }
 
     /**

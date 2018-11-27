@@ -19,7 +19,7 @@ import java.util.Map;
 public class RecordStorage implements IDataStorage<RecordStorage> {
     private Categories category;
     private String key;
-    public Map fieldsMap = new LinkedHashMap<Fields,String>();
+    private Map fieldsMap = new LinkedHashMap<Fields,String>();
 
     /**
      * Default constructor for {@link bibtex.data.record.RecordStorage}.
@@ -34,11 +34,6 @@ public class RecordStorage implements IDataStorage<RecordStorage> {
         this.key = key;
     }
 
-    @Override
-    public RecordStorage get(){
-        return this;
-    }
-
     /**
      * Adds field to particular {@link bibtex.data.record.RecordStorage}.
      *
@@ -50,6 +45,24 @@ public class RecordStorage implements IDataStorage<RecordStorage> {
      */
     public void addField(Fields field, String value){
         fieldsMap.put(field, value);
+    }
+
+    /**
+     *
+     * @return All the fields of a record with their values.
+     */
+    public Map getFields() {
+        return this.fieldsMap;
+    }
+
+    /**
+     *
+     * @param field
+     * @return Value of given field or
+     *         null if no record doesn't contain field.
+     */
+    public String getValueOfField(Fields field) {
+        return (String)this.fieldsMap.get(field);
     }
 
     /**
