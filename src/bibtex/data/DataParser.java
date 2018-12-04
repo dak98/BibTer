@@ -5,6 +5,8 @@ import bibtex.data.record.RecordStorage;
 import bibtex.data.string.constant.StringParser;
 import bibtex.data.string.constant.StringStorage;
 import data.operations.IDataParser;
+import data.operations.IDataStorage;
+import utility.LineCounter;
 
 /**
  * Main parser for the BibTex files.
@@ -15,7 +17,7 @@ import data.operations.IDataParser;
  *
  * @author dak98
  */
-public class DataParser implements IDataParser<DataStorage> {
+public class DataParser implements IDataParser {
     /**
      * Parses specified BibTex data in order to pick out all the records.
      *
@@ -26,22 +28,29 @@ public class DataParser implements IDataParser<DataStorage> {
     @Override
     public DataStorage parse(String dataToParse) {
         DataStorage dataStorage = new DataStorage();
+        LineCounter lineCounter = new LineCounter();
 
         for (int nextStart = dataToParse.indexOf('@'); nextStart != -1; nextStart = dataToParse.indexOf('@')) {
-            dataToParse = dataToParse.substring(nextStart + 1);
-
-            IDataParser parser = new RecordParser();
-            RecordStorage record = (RecordStorage)parser.parse(dataToParse);
-            parser = new StringParser();
-            StringStorage stringConstant = (StringStorage)parser.parse(dataToParse);
-
-            if (record != null) {
-                dataStorage.addRecord(record);
-            } else if (stringConstant != null) {
-                dataStorage.addStringConstant(stringConstant);
+            /* If '@' means new BibTex object */
+            if ((dataToParse = dataToParse.substring(nextStart + 1)).charAt(0) != ' ') {
+                lineCounter.increment();
+                IDataParser parser = new StringParser();
+                StringStorage stringConstant = (StringStorage) parser.parse(dataToParse);
+                if (stringConstant != null) {
+                    dataStorage.addStringConstant(stringConstant);
+                }
+                parser = new RecordParser();
+                RecordStorage record = (RecordStorage) parser.parse(dataToParse.substring(0, dataToParse.indexOf('}') + 1));
+                if (record != null) {
+                    dataStorage.addRecord(record);
+                    dataToParse = dataToParse.substring(dataToParse.indexOf('}'));
+                } else {
+                    lineCounter.decrement();
+                }
+            } else {
+                lineCounter.increment();
             }
         }
-
         return dataStorage;
     }
 }

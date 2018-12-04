@@ -2,6 +2,7 @@ package bibtex.data;
 
 import bibtex.data.record.RecordPrint;
 import bibtex.data.record.RecordStorage;
+import bibtex.syntax.Categories;
 import data.operations.IDataPrint;
 
 import java.util.List;
@@ -21,6 +22,45 @@ public class DataPrint implements IDataPrint<DataStorage> {
 
         IDataPrint printer = new RecordPrint();
         for (RecordStorage record : recordsList) {
+            printer.print(record, borderSymbol);
+            System.out.println("");
+        }
+    }
+
+    /**
+     * Prints records from dataStorage which
+     * have article or editor field with the
+     * specified lastName.
+     *
+     * @param dataStorage
+     * @param borderSymbol
+     *         Border symbol for printing the record.
+     * @param lastName
+     */
+    public void printByName(DataStorage dataStorage, Character borderSymbol, String lastName) {
+        List<RecordStorage> recordsByAuthor = dataStorage.getRecordsByName(lastName);
+
+        IDataPrint printer = new RecordPrint();
+        for (RecordStorage record : recordsByAuthor) {
+            printer.print(record, borderSymbol);
+            System.out.println("");
+        }
+    }
+
+    /**
+     * Prints records from dataStorage which
+     * have given category.
+     *
+     * @param dataStorage
+     * @param borderSymbol
+     *         Border symbol for printing the record.
+     * @param category
+     */
+    public void printByCategory(DataStorage dataStorage, Character borderSymbol, Categories category) {
+        List<RecordStorage> recordsByCategory = dataStorage.getRecordsByCategory(category);
+
+        IDataPrint printer = new RecordPrint();
+        for (RecordStorage record : recordsByCategory) {
             printer.print(record, borderSymbol);
             System.out.println("");
         }

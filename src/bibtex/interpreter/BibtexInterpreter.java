@@ -3,34 +3,36 @@ package bibtex.interpreter;
 import bibtex.data.DataParser;
 import bibtex.data.DataPrint;
 import bibtex.data.DataStorage;
-import bibtex.data.Loader;
+import bibtex.data.DataLoader;
+import command.line.input.CmdInputParser;
+import command.line.input.CmdInputStorage;
 import data.operations.IDataParser;
 import data.operations.IDataPrint;
 import data.operations.IDataStorage;
+import options.menu.CmdDisplay;
+import options.menu.IDisplay;
 
+import java.io.IOException;
 import java.lang.StringBuilder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
 public class BibtexInterpreter {
     public static void main(String[] args) {
-        Loader loader = new Loader();
-        StringBuilder s = null;
-        Path path = Paths.get("/home/jakub/Documents/xd.bib");
-        try {
-            s = loader.load(path);
-        } catch (Exception e) {
-            System.out.println("xd");
-        }
+        IDisplay display = new CmdDisplay();
+        String userInput = display.menu(args);
 
-        IDataParser<DataStorage> parser = new DataParser();
+        IDataParser cmdInputParser = new CmdInputParser();
+        IDataStorage cmdInputStorage = (CmdInputStorage) cmdInputParser.parse(userInput);
 
-        IDataStorage<DataStorage> dataStorage = parser.parse(s.toString());
+        DataLoader dataLoader = new DataLoader();
+        StringBuilder file = dataLoader.load(Paths.get(((CmdInputStorage) cmdInputStorage).getFilePath()));
 
-        IDataPrint<DataStorage> printer = new DataPrint();
+        IDataParser parser = new DataParser();
+        IDataStorage dataStorage = (DataStorage) parser.parse(file.toString());
+        ((DataStorage) dataStorage).expandRecords();
 
-        printer.print((DataStorage) dataStorage, '#');
-
+        DataPrint printer = new DataPrint();
+        printer.print(((DataStorage) dataStorage), ((CmdInputStorage) cmdInputStorage).getFrameSymbol());
     }
 }

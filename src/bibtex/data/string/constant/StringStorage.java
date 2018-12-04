@@ -5,11 +5,42 @@ import data.operations.IDataStorage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StringStorage implements IDataStorage<StringStorage> {
-    private Map stringConstantMap = new HashMap<String, String>();
+/**
+ * Container class for storing a single string constant.
+ *
+ * Implements {@link data.operations.IDataStorage}.
+ *
+ * @author dak98
+ */
+public class StringStorage implements IDataStorage {
+    private String abbrev;
+    private String fullString;
 
-    public void addStringConstant(String key, String value) {
-        stringConstantMap.put(key,value);
+    /**
+     * Default constructor.
+     *
+     * @param abbrev
+     *         Abbreviation for string constant.
+     * @param fullString
+     *         String constant in full.
+     */
+    public StringStorage(String abbrev, String fullString) {
+        this.abbrev = abbrev;
+        this.fullString = fullString;
     }
 
+    /**
+     *
+     * @param abbrev
+     * @return {@link bibtex.data.string.constant.StringStorage#fullString} if abbrev matches
+     *         {@link bibtex.data.string.constant.StringStorage#abbrev}.
+     *         null otherwise.
+     */
+    public String getStringConstant(String abbrev) {
+        if (this.abbrev.equals(abbrev)) {
+            return fullString;
+        } else {
+            return null;
+        }
+    }
 }

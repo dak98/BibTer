@@ -3,6 +3,7 @@ package bibtex.data.string.constant;
 import bibtex.syntax.KeyWords;
 import bibtex.syntax.ToEnumConverter;
 import data.operations.IDataParser;
+import utility.LineCounter;
 
 /**
  * Contains methods for parsing string constant of a BibTex file.
@@ -13,7 +14,7 @@ import data.operations.IDataParser;
  *
  * @author dak98
  */
-public class StringParser implements IDataParser<StringStorage> {
+public class StringParser implements IDataParser {
     /**
      * Parses a string constant.
      *
@@ -29,27 +30,24 @@ public class StringParser implements IDataParser<StringStorage> {
      */
     @Override
     public StringStorage parse(String dataToParse) {
+        LineCounter lineCounter = new LineCounter();
+
         if (dataToParse == null) {
             throw new NullPointerException();
         }
 
-        StringStorage stringStorage = new StringStorage();
-
         if (isStringConstant(dataToParse)) {
             dataToParse = dataToParse.substring(dataToParse.indexOf('(') + 1);
 
-            String key = getKey(dataToParse);
+            String abbrev = getKey(dataToParse);
             dataToParse = dataToParse.substring(dataToParse.indexOf('=') + 3);
 
-            String value = getValue(dataToParse);
+            String fullString = getValue(dataToParse);
 
-            stringStorage.addStringConstant(key, value);
+            return new StringStorage(abbrev, fullString);
         } else {
             return null;
         }
-
-
-        return stringStorage;
     }
 
     /**
@@ -61,7 +59,7 @@ public class StringParser implements IDataParser<StringStorage> {
         ToEnumConverter converter = new ToEnumConverter();
         boolean answer = true;
         try {
-            answer = converter.toKeyWord(dataToParse.substring(0, dataToParse.indexOf(')'))) == KeyWords.string;
+            answer = converter.toKeyWord(dataToParse.substring(0, dataToParse.indexOf('(')).toLowerCase()) == KeyWords.string;
         } catch (Exception e) {
             return false;
         }

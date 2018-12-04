@@ -2,7 +2,6 @@ package bibtex.data.record;
 
 import bibtex.syntax.Fields;
 import data.operations.IDataPrint;
-import data.operations.IDataStorage;
 
 import java.util.HashSet;
 import java.util.Map;

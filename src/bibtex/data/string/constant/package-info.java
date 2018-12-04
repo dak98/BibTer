@@ -1,5 +1,5 @@
 /**
- * Contains classes which manage parsing, storage and printing of
+ * Contains classes which manage parsing and storage of
  * string literals inside a BibTex file.
  *
  * @author dak98

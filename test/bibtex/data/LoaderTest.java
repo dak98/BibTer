@@ -7,8 +7,9 @@ class LoaderTest {
 
     @Test
     void loadShouldThrowNullPointerException() {
-        Loader loader = new Loader();
+        DataLoader dataLoader = new DataLoader();
 
-        assertThrows(NullPointerException.class, () -> {loader.load(null);}, "ok");
+        assertThrows(NullPointerException.class, () -> {
+            dataLoader.load(null);}, "ok");
     }
 }

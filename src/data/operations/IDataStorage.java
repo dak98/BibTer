@@ -1,4 +1,4 @@
 package data.operations;
 
-public interface IDataStorage<T> {
+public interface IDataStorage {
 }

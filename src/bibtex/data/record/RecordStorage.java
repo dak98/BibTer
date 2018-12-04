@@ -1,11 +1,12 @@
 package bibtex.data.record;
 
+import bibtex.data.DataStorage;
+import bibtex.data.string.constant.StringStorage;
 import bibtex.syntax.Categories;
 import bibtex.syntax.Fields;
 import data.operations.IDataStorage;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Container class for storing a single record.
@@ -16,13 +17,13 @@ import java.util.Map;
  *
  * @author dak98
  */
-public class RecordStorage implements IDataStorage<RecordStorage> {
+public class RecordStorage implements IDataStorage {
     private Categories category;
     private String key;
     private Map fieldsMap = new LinkedHashMap<Fields,String>();
 
     /**
-     * Default constructor for {@link bibtex.data.record.RecordStorage}.
+     * Constructor for {@link bibtex.data.record.RecordStorage}.
      *
      * @param category
      *          Category of the record.
@@ -35,10 +36,16 @@ public class RecordStorage implements IDataStorage<RecordStorage> {
     }
 
     /**
+     * Default constructor for {@link bibtex.data.record.RecordStorage}
+     *
+     */
+    public RecordStorage() {}
+
+    /**
      * Adds field to particular {@link bibtex.data.record.RecordStorage}.
      *
      * @param field
-     *          Field's name as enum constant.
+     *          Field's lastName as enum constant.
      * @param value
      *          Field's value.
      *
@@ -68,7 +75,7 @@ public class RecordStorage implements IDataStorage<RecordStorage> {
     /**
      *
      * @param category
-     *          Category of the record.
+     *         Category of the record.
      */
     public void setCategory(Categories category) {
         this.category = category;
@@ -84,9 +91,65 @@ public class RecordStorage implements IDataStorage<RecordStorage> {
 
     /**
      *
+     * @param key
+     *         Key of a record to be set.
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    /**
+     *
      * @return Key of the record.
      */
     public String getKey() {
         return this.key;
     }
+
+    /**
+     * Expands string constants contained in fields of
+     * the record.
+     * @param stringsStorage
+     *         List of string constants from the BibTex file.
+     */
+    public void expandFields(List<StringStorage> stringsStorage) {
+        Set<Map.Entry<Fields, String>> fieldsValues = getFields().entrySet();
+
+        for (Map.Entry<Fields, String> fieldValue : fieldsValues) {
+            StringBuilder expandedString = new StringBuilder();
+            boolean expand = (fieldValue.getValue().indexOf("\"") == 0);
+            StringTokenizer sections;
+            if (expand) {
+                sections = new StringTokenizer(fieldValue.getValue().substring(1), "\"");
+            } else {
+                sections = new StringTokenizer(fieldValue.getValue(), "\"");
+            }
+            while (sections.countTokens() > 0) {
+                /* If '#' should be expanded */
+                if (!expand) {
+                    String abbrev = removeNonLetters(sections.nextToken());
+                    for (StringStorage stringConstant : stringsStorage) {
+                        if (stringConstant.getStringConstant(abbrev) != null) {
+                            expandedString.append(stringConstant.getStringConstant(abbrev));
+                            break;
+                        }
+                    }
+                } else {
+                    expandedString.append(sections.nextToken());
+                }
+                expand = !expand;
+            }
+            addField(fieldValue.getKey(), expandedString.toString());
+        }
+    }
+
+    /**
+     *
+     * @param word
+     * @return word with removed all non-letter characters.
+     */
+    private String removeNonLetters(String word) {
+        return word.replaceAll("[^A-Za-z0-9]", "");
+    }
 }
+

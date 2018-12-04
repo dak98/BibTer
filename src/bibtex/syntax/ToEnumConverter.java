@@ -11,6 +11,22 @@ package bibtex.syntax;
  */
 public class ToEnumConverter {
     /**
+     *
+     * @param category
+     *         Should not contain white spaces.
+     * @return True if argument is a category.
+     *         False otherwise.
+     */
+    public boolean isCategory(String category) {
+        try {
+            toCategory(category.toLowerCase());
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Converts given String to a Fields' enum constant.
      *
      * @param stringLiteral

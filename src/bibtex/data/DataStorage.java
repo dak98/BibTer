@@ -1,5 +1,6 @@
 package bibtex.data;
 
+import bibtex.data.name.NameEquals;
 import bibtex.data.record.RecordStorage;
 import bibtex.data.string.constant.StringStorage;
 import bibtex.syntax.Categories;
@@ -8,6 +9,9 @@ import data.operations.IDataStorage;
 
 import java.util.*;
 
+import static bibtex.syntax.Fields.author;
+import static bibtex.syntax.Fields.editor;
+
 /**
  * Container class for storing list of {@link bibtex.data.record.RecordStorage}.
  *
@@ -15,8 +19,7 @@ import java.util.*;
  *
  * @author dak98
  */
-
-public class DataStorage implements IDataStorage<DataStorage> {
+public class DataStorage implements IDataStorage {
     private List<RecordStorage> records = new LinkedList<>();
     private List<StringStorage> stringConstants = new LinkedList<>();
 
@@ -52,13 +55,23 @@ public class DataStorage implements IDataStorage<DataStorage> {
 
     /**
      *
-     * @param author
-     * @return List of records written by given author.
+     * @return List of all string constants from the BibTex file.
      */
-    public List<RecordStorage> getRecordsByAuthor(String author) {
+    public List<StringStorage> getStringConstants() {
+        return this.stringConstants;
+    }
+
+    /**
+     *
+     * @param lastName
+     * @return List of records written or edited by person with specified lastName.
+     */
+    public List<RecordStorage> getRecordsByName(String lastName) {
         List listByAuthors = new LinkedList<RecordStorage>();
+        NameEquals nameEquals = new NameEquals();
         for (RecordStorage record : records) {
-            if (record.getValueOfField(Fields.author) != null && record.getValueOfField(Fields.author).equals(author)) {
+            if ((record.getValueOfField(author) != null && nameEquals.equals(record.getValueOfField(author),lastName)) ||
+                 record.getValueOfField(editor) != null && nameEquals.equals(record.getValueOfField(editor), lastName)) {
                 listByAuthors.add(record);
             }
         }
@@ -70,7 +83,7 @@ public class DataStorage implements IDataStorage<DataStorage> {
      * @param category
      * @return List of records with given category.
      */
-    public List<RecordStorage> getRecordsByCategories(Categories category) {
+    public List<RecordStorage> getRecordsByCategory(Categories category) {
         List listByCategory = new LinkedList<RecordStorage>();
         for (RecordStorage record : records) {
             if (record.getCategory().equals(category)) {
@@ -78,6 +91,16 @@ public class DataStorage implements IDataStorage<DataStorage> {
             }
         }
         return listByCategory;
+    }
+
+    /**
+     * Expands string constants contained in fields of
+     * the records from the BibTex file.
+     */
+    public void expandRecords() {
+        for (RecordStorage record : getRecords()) {
+            record.expandFields(getStringConstants());
+        }
     }
 }
 

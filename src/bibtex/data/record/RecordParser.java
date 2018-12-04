@@ -4,9 +4,10 @@ import bibtex.syntax.Categories;
 import bibtex.syntax.Fields;
 import bibtex.syntax.FieldsOfCategory;
 import bibtex.syntax.ToEnumConverter;
+import data.operations.IDataChecker;
 import data.operations.IDataParser;
+import utility.LineCounter;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -20,94 +21,87 @@ import java.util.StringTokenizer;
  *
  * @author dak98
  */
-public class RecordParser implements IDataParser<RecordStorage> {
+public class RecordParser implements IDataParser {
     /**
      * Parses an individual record to pick up category, key and fields.
      *
      * @param dataToParse
      *          String with a individual record.
-     *          Should start with category name and end with '}' sign.
+     *          Should start with category lastName and end with '}' sign.
      * @return Instance of RecordStorage representing an individual record or
-     *         null if category name is not in {@link Categories}.
+     *         null if category lastName is not in {@link Categories}.
      * @throws NullPointerException
      *          dataToParse is null.
      * @throws IndexOutOfBoundsException
      *          No record's key was found.
      * @throws IllegalArgumentException
-     *          Field's name was not correct.
+     *          Field's lastName was not correct.
      * @throws UnsupportedOperationException
      *          There weren't enough obligatory fields for category.
      */
     public RecordStorage parse(String dataToParse) {
-        if (dataToParse == null) {
-            throw new NullPointerException();
-        }
+        LineCounter lineCounter = new LineCounter();
+        int startLine = lineCounter.getNumberOfLines();
 
-        int end = dataToParse.indexOf('}');
-        if (end == -1) {
-            return null;
-        }
+        /* Storage for current record */
+        RecordStorage recordStorage = new RecordStorage();
 
-        dataToParse = dataToParse.substring(0, dataToParse.indexOf('}'));
-
-        Categories category = getCategory(dataToParse);
-
-        if (category == null) {
-            return null;
-        }
-
-        dataToParse = dataToParse.substring(dataToParse.indexOf('{') + 1);
-        StringTokenizer stringTokenizer = new StringTokenizer(dataToParse, ",");
-
-        String key = getKey(dataToParse);
-
-        RecordStorage recordStorage = new RecordStorage(category, key);
-
-        FieldsOfCategory fieldsOfCategory = new FieldsOfCategory();
-        List currentListOfObligatoryFields = new LinkedList<Fields>();
-        String token = stringTokenizer.nextToken();
-        while (stringTokenizer.hasMoreTokens()) {
-            token = moveToFirstChar(stringTokenizer.nextToken());
-            Fields field = getNextField(token);
-
-            token = moveToFirstChar(token.substring(token.indexOf('=') + 1));
-            token = token.substring(1);
-
-            String value = getNextFieldValue(token);
-
-            if (fieldsOfCategory.isFieldOfCategory(category, field)) {
-                recordStorage.addField(field, value);
-                if (fieldsOfCategory.isObligatory(category, field)) {
-                    currentListOfObligatoryFields.add(field);
+        IDataChecker recordChecker = new RecordChecker();
+        if (recordChecker.check(dataToParse)) {
+            dataToParse = dataToParse.substring(0,dataToParse.indexOf('}') - 3);
+            /* Get category of a record */
+            recordStorage.setCategory(getCategory(dataToParse));
+            if (!isValidCategory(recordStorage.getCategory())) {
+                return null;
+            }
+            /* Get key of a record */
+            recordStorage.setKey(getKey(dataToParse = dataToParse.substring(dataToParse.indexOf('{') + 1)));
+            /* Split by comma */
+            StringTokenizer stringTokenizer = new StringTokenizer(dataToParse.substring(dataToParse.indexOf('@') + 1), "@");
+            /* Checking if fields meet requirements of category */
+            FieldsOfCategory fieldsOfCategory = new FieldsOfCategory();
+            List currentListOfObligatoryFields = new LinkedList<Fields>();
+            /* Get fields of the record */
+            while (stringTokenizer.hasMoreTokens()) {
+                lineCounter.increment();
+                String token = moveToFirstChar(stringTokenizer.nextToken());
+                Fields field = getNextField(token);
+                token = moveToFirstChar(token.substring(token.indexOf('=') + 1));
+                String value = getNextFieldValue(token + ',');
+                /* If field is not ignored in a category */
+                if (fieldsOfCategory.isFieldOfCategory(recordStorage.getCategory(), field)) {
+                    recordStorage.addField(field, value);
+                    if (fieldsOfCategory.isObligatory(recordStorage.getCategory(), field)) {
+                        currentListOfObligatoryFields.add(field);
+                    }
                 }
             }
-        }
-
-        List listOfObligatoryFields = new LinkedList<Fields>(fieldsOfCategory.getObligatoryFields(category));
-        listOfObligatoryFields.removeAll(currentListOfObligatoryFields);
-
-        if (listOfObligatoryFields.isEmpty()) {
-            return recordStorage;
-        } else {
-            Iterator<Fields> listIterator = listOfObligatoryFields.listIterator();
-            StringBuilder message = new StringBuilder();
-            while (listIterator.hasNext()) {
-                message.append(listIterator.next()).append(" ");
+            /* Check if record has all the obligatory fields */
+            List<Fields> listOfObligatoryFields = new LinkedList(fieldsOfCategory.getObligatoryFields(recordStorage.getCategory()));
+            listOfObligatoryFields.removeAll(currentListOfObligatoryFields);
+            /* If record has all the fields of a category */
+            if (listOfObligatoryFields.isEmpty()) {
+                return recordStorage;
+            } else {
+                throw new UnsupportedOperationException("Missing " +
+                        reportMissingObligatoryFields(listOfObligatoryFields) +
+                        "from " + recordStorage.getCategory() + "in the record starting at line " +
+                        startLine + ".");
             }
-            throw new UnsupportedOperationException("Missing " + message + "from " + category + ".");
         }
+        return recordStorage;
     }
 
     /**
-     * Parses data to get category name of a record.
+     * Parses data to get category lastName of a record.
      *
      * It uses {@link String#toLowerCase()} with default locale.
      *
      * @param dataToParse
-     *          String to get category name from.
+     *          String to get category lastName from.
      *          It must start with char sequence to be checked and
      *          end with '{' sign.
-     * @return Category name of a record or
+     * @return Category lastName of a record or
      *         null if it is not in {@link bibtex.syntax.Categories}.
      */
     private Categories getCategory(String dataToParse) {
@@ -126,6 +120,16 @@ public class RecordParser implements IDataParser<RecordStorage> {
     }
 
     /**
+     *
+     * @param category
+     * @return True if category is not null.
+     *         False otherwise.
+     */
+    private boolean isValidCategory(Categories category) {
+        return (category != null);
+    }
+
+    /**
      * Parses data to get key of a record.
      *
      * @param dataToParse
@@ -136,25 +140,26 @@ public class RecordParser implements IDataParser<RecordStorage> {
      * @throws IndexOutOfBoundsException
      *          No key in a record.
      */
-    private String getKey(String dataToParse) {
+    private String getKey(String dataToParse){
+        LineCounter lineCounter = new LineCounter();
+
         int start = 0;
         int end = dataToParse.indexOf(',');
 
         if (start >= end) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("No key found in a record at line " + lineCounter.getNumberOfLines() + ".");
         }
-
         try {
             dataToParse = dataToParse.substring(start, end);
         } catch (IndexOutOfBoundsException e) {
-            throw new IndexOutOfBoundsException("No key found in a record.");
+            throw new IndexOutOfBoundsException("No key found in a record at line " + lineCounter.getNumberOfLines() + ".");
         }
 
         return dataToParse;
     }
 
     /**
-     * Parses data to get name of a next field.
+     * Parses data to get lastName of a next field.
      *
      * It uses {@link String#toLowerCase()} with default locale.
      *
@@ -164,7 +169,7 @@ public class RecordParser implements IDataParser<RecordStorage> {
      *          end with with a space.
      * @return Name of a next field.
      * @throws IllegalArgumentException
-     *          Illegal field name.
+     *          Illegal field lastName.
      */
     private Fields getNextField(String dataToParse) {
         int start = 0;
@@ -175,7 +180,8 @@ public class RecordParser implements IDataParser<RecordStorage> {
         try {
             field = converter.toField(dataToParse.substring(start, end).toLowerCase());
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-            throw new IllegalArgumentException("Illegal field name.");
+            LineCounter lineCounter = new LineCounter();
+            throw new IllegalArgumentException("Illegal field name on line " + lineCounter.getNumberOfLines() + ".");
         }
 
         return field;
@@ -194,14 +200,14 @@ public class RecordParser implements IDataParser<RecordStorage> {
      */
     private String getNextFieldValue(String dataToParse) {
         int start = 0;
-        int end = dataToParse.indexOf('"');
+        int end = dataToParse.indexOf(',');
 
         try {
             dataToParse = dataToParse.substring(start, end);
         } catch (IndexOutOfBoundsException e) {
-            throw new IndexOutOfBoundsException("No value of a particular field found in a record.");
+            LineCounter lineCounter = new LineCounter();
+            throw new IndexOutOfBoundsException("No field value found on line " + lineCounter.getNumberOfLines() + ".");
         }
-
         return dataToParse;
     }
 
@@ -211,10 +217,23 @@ public class RecordParser implements IDataParser<RecordStorage> {
      * @return Substring of data which starts with a char type element.
      */
     private String moveToFirstChar(String data) {
-        while (data.indexOf(' ') == 0) {
+        while (Character.isWhitespace(data.charAt(0))) {
             data = data.substring(1);
         }
-
         return data;
+    }
+
+    /**
+     *
+     * @param listOfMissingFields
+     *         List of missing obligatory fields.
+     * @return String with names of missing obligatory fields.
+     */
+    private String reportMissingObligatoryFields(List<Fields> listOfMissingFields) {
+        StringBuilder missingFields = new StringBuilder();
+        for (Fields field : listOfMissingFields) {
+            missingFields.append(field).append(" ");
+        }
+        return missingFields.toString();
     }
 }

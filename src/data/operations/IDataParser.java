@@ -1,5 +1,5 @@
 package data.operations;
 
-public interface IDataParser<T> {
-    public T parse(String dataToParse);
+public interface IDataParser {
+    public Object parse(String dataToParse);
 }

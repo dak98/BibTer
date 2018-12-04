@@ -7,7 +7,21 @@ import static org.junit.jupiter.api.Assertions.*;
 class ToEnumConverterTest {
 
     @Test
-    void toField() {
+    void shouldBeRecognizedAsCategory() {
+        ToEnumConverter converter = new ToEnumConverter();
+        assertTrue(converter.isCategory("aRticLe"));
+        assertTrue(converter.isCategory("BooK"));
+    }
+
+    @Test
+    void shouldNotBeRecognizedAsCategory() {
+        ToEnumConverter converter = new ToEnumConverter();
+        assertFalse(converter.isCategory("RticLe"));
+        assertFalse(converter.isCategory("B0oK"));
+    }
+
+    @Test
+    void toFieldTest() {
         int length = Fields.values().length;
 
         String[] fields = new String[length];
@@ -25,7 +39,7 @@ class ToEnumConverterTest {
     }
 
     @Test
-    void toCategory() {
+    void toCategoryTest() {
         int length = Categories.values().length;
 
         String[] categories = new String[length];
@@ -43,7 +57,7 @@ class ToEnumConverterTest {
     }
 
     @Test
-    void toKeyWord() {
+    void toKeyWordTest() {
         int length = KeyWords.values().length;
 
         String[] keywords = new String[length];
@@ -57,6 +71,6 @@ class ToEnumConverterTest {
             assertEquals(KeyWords.values()[i], converter.toKeyWord(keywords[i]));
         }
 
-        assertThrows(IllegalArgumentException.class, () -> {converter.toKeyWord("author");});
+        assertThrows(IllegalArgumentException.class, () -> {converter.toKeyWord("lastName");});
     }
 }
