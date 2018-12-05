@@ -7,6 +7,12 @@ import data.operations.IDataPrint;
 
 import java.util.List;
 
+/**
+ * Class responsible for printing records
+ * from the BibTex's file.
+ *
+ * @author dak98
+ */
 public class DataPrint implements IDataPrint<DataStorage> {
     /**
      * Prints all the records of a BibTex file.

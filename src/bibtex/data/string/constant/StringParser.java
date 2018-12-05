@@ -40,7 +40,7 @@ public class StringParser implements IDataParser {
             dataToParse = dataToParse.substring(dataToParse.indexOf('(') + 1);
 
             String abbrev = getKey(dataToParse);
-            dataToParse = dataToParse.substring(dataToParse.indexOf('=') + 3);
+            dataToParse = dataToParse.substring(dataToParse.indexOf('=') + 2);
 
             String fullString = getValue(dataToParse);
 
@@ -99,7 +99,7 @@ public class StringParser implements IDataParser {
     private String getValue(String dataToParse) {
         String value;
         try {
-            value = dataToParse.substring(0, dataToParse.indexOf('"'));
+            value = dataToParse.substring(0, dataToParse.indexOf(')'));
         } catch (IndexOutOfBoundsException e) {
             throw new IndexOutOfBoundsException();
         }

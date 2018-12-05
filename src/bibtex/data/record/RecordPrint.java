@@ -9,6 +9,12 @@ import java.util.Set;
 
 import static sun.swing.MenuItemLayoutHelper.max;
 
+/**
+ * Class responsible for printing an individual record
+ * from the BibTex's file.
+ *
+ * @author dak98
+ */
 public class RecordPrint implements IDataPrint<RecordStorage> {
     private final int lengthBias = 7;
 

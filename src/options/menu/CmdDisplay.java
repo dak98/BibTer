@@ -1,10 +1,21 @@
 package options.menu;
 
+import bibtex.data.DataPrint;
+import bibtex.data.DataStorage;
+import bibtex.syntax.Categories;
+import command.line.input.CmdInputStorage;
 import command.line.input.bibtex.file.path.FilePathChecker;
 import command.line.input.frame.symbol.FrameSymbolChecker;
+import command.line.input.lastname.LastNameStorage;
 import data.operations.IDataChecker;
+import data.operations.IDataPrint;
+import data.operations.IDataStorage;
+import runtime.command.interpreter.RuntimeCommands;
 
+import java.util.List;
 import java.util.Scanner;
+
+import static runtime.command.interpreter.RuntimeCommands.*;
 
 /**
  * Class responsible for displaying menu with program's options
@@ -39,6 +50,47 @@ public class CmdDisplay implements IDisplay {
         }
 
         return correctedInput.toString();
+    }
+
+    /**
+     * Options menu for displaying BibTex file based on
+     * user's commands.
+     *
+     * @param dataStorage
+     *         Data from the BibTex file.
+     * @param frameSymbol
+     *         Symbol of the frame of the record's output.
+     * @param cmdInputStorage
+     *         User's input to the program.
+     */
+    public void printMenu(IDataStorage dataStorage, Character frameSymbol, IDataStorage cmdInputStorage){
+        System.out.println("The file has been loaded successfully.");
+
+        Scanner scanner = new Scanner(System.in);
+        IDataPrint<DataStorage> printer = new DataPrint();
+        boolean stop = false;
+        while (!stop) {
+            System.out.print("Please enter one program's commands [");
+            for (RuntimeCommands command : RuntimeCommands.values()) {
+                System.out.print(" " + command);
+            }
+            System.out.println(" ]:");
+            String command = scanner.next();
+            if (toEnum(command) == listAll) {
+                    printer.print((DataStorage) dataStorage, frameSymbol);
+            } else if (toEnum(command) == listAuthors) {
+                for (LastNameStorage lastName : (List<LastNameStorage>) ((CmdInputStorage) cmdInputStorage).getLastNamesList()) {
+                    ((DataPrint) printer).printByName((DataStorage) dataStorage, frameSymbol, lastName.getLastName());
+                }
+            } else if (toEnum(command) == listCategories) {
+                for (Categories category : (List<Categories>) ((CmdInputStorage) cmdInputStorage).getCategoriesList()) {
+                    ((DataPrint) printer).printByCategory((DataStorage) dataStorage, frameSymbol, category);
+                }
+            } else {
+                System.out.println("The command in not recognized by the program. The program will now exit");
+                    stop = true;
+            }
+        }
     }
 
     /**

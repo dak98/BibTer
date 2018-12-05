@@ -4,6 +4,7 @@ import bibtex.data.DataParser;
 import bibtex.data.DataPrint;
 import bibtex.data.DataStorage;
 import bibtex.data.DataLoader;
+import bibtex.data.string.constant.StringStorage;
 import command.line.input.CmdInputParser;
 import command.line.input.CmdInputStorage;
 import data.operations.IDataParser;
@@ -32,7 +33,6 @@ public class BibtexInterpreter {
         IDataStorage dataStorage = (DataStorage) parser.parse(file.toString());
         ((DataStorage) dataStorage).expandRecords();
 
-        DataPrint printer = new DataPrint();
-        printer.print(((DataStorage) dataStorage), ((CmdInputStorage) cmdInputStorage).getFrameSymbol());
+        ((CmdDisplay) display).printMenu(dataStorage, ((CmdInputStorage) cmdInputStorage).getFrameSymbol(), cmdInputStorage);
     }
 }

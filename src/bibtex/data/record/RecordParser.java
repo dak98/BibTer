@@ -85,7 +85,7 @@ public class RecordParser implements IDataParser {
             } else {
                 throw new UnsupportedOperationException("Missing " +
                         reportMissingObligatoryFields(listOfObligatoryFields) +
-                        "from " + recordStorage.getCategory() + "in the record starting at line " +
+                        "from " + recordStorage.getCategory() + " in the record starting at line " +
                         startLine + ".");
             }
         }
@@ -232,7 +232,7 @@ public class RecordParser implements IDataParser {
     private String reportMissingObligatoryFields(List<Fields> listOfMissingFields) {
         StringBuilder missingFields = new StringBuilder();
         for (Fields field : listOfMissingFields) {
-            missingFields.append(field).append(" ");
+            missingFields.append(field).append(", ");
         }
         return missingFields.toString();
     }

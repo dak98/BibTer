@@ -94,10 +94,13 @@ public class DataStorage implements IDataStorage {
     }
 
     /**
-     * Expands string constants contained in fields of
-     * the records from the BibTex file.
+     * Expands string constants contained in other string constants
+     * and fields of the records from the BibTex file.
      */
     public void expandRecords() {
+        for (StringStorage stringConstant : getStringConstants()) {
+            stringConstant.expandString(getStringConstants());
+        }
         for (RecordStorage record : getRecords()) {
             record.expandFields(getStringConstants());
         }
