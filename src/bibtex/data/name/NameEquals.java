@@ -2,6 +2,8 @@ package bibtex.data.name;
 
 import data.operations.IDataParser;
 
+import java.util.StringTokenizer;
+
 /**
  * Class responsible if to given names are equal
  * (have the same last lastName).
@@ -18,6 +20,17 @@ public class NameEquals {
      */
     public boolean equals(String name1, String name2) {
         IDataParser nameParser = new NameParser();
-        return nameParser.parse(name1).equals(nameParser.parse(name2));
+        StringTokenizer name1Tokens = new StringTokenizer(name1, " and ");
+
+
+        boolean equal = false;
+        while (name1Tokens.countTokens() > 0 && !equal) {
+            String name1Token = name1Tokens.nextToken();
+            StringTokenizer name2Tokens = new StringTokenizer(name2, " and ");
+            while (name2Tokens.countTokens() > 0 && !equal) {
+                equal = nameParser.parse(name1Token).equals(nameParser.parse(name2Tokens.nextToken()));
+            }
+        }
+        return equal;
     }
 }

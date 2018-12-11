@@ -10,10 +10,10 @@ class NameParserTest {
     @Test
     void nameParserTest() {
         String[] names = {"Imię von Nazwisko ", "von    von von Nazwisko Imię  ", "Imię Nazwisko",
-                          "von    Nazwisko|        Imię", "  von     von    Imię     Nazwisko|    Imię   Nazwisko",
-                          "Imię    Nazwisko| Imię     Nazwisko",
-                          "von von von Nazwisko| Jr| Imię", "von Imię Jr Nazwisko| Jr| Imię",
-                          "von Nazwisko| Jr| Imię| Imię" };
+                "von    Nazwisko|        Imię", "  von     von    Imię     Nazwisko|    Imię   Nazwisko",
+                "Imię    Nazwisko| Imię     Nazwisko",
+                "von von von Nazwisko| Jr| Imię", "von Imię Jr Nazwisko| Jr| Imię",
+                "von Nazwisko| Jr| Imię| Imię" };
 
         IDataParser nameParser = new NameParser();
 
@@ -30,4 +30,20 @@ class NameParserTest {
 
         assertEquals(null, nameParser.parse(names[8]));
     }
+
+    @Test
+    void namesShouldBeEqual() {
+        String[] names = {"Jerzy Wenta and Janusz Kowalski", "von Imię Nazwisko and von Jerzy Wenta and Janusz Kowalski",
+                          "    Jerzy      Wenta      and      Janusz Kowalski       and     Jan Maria Rokita",
+                          "   von Jerzy| Jr| Wenta and Janusz| Kowalski"};
+
+        NameEquals nameEquals = new NameEquals();
+
+        assertTrue(nameEquals.equals("Kowalski", names[1]));
+        assertTrue(nameEquals.equals(names[1], "Kowalski"));
+        assertTrue(nameEquals.equals(names[2], "Wenta"));
+        assertTrue(nameEquals.equals(names[2], "Rokita"));
+        assertTrue(nameEquals.equals(names[3], "Jerzy|"));
+    }
+
 }
